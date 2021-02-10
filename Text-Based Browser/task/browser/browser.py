@@ -1,5 +1,6 @@
 import sys
 import os
+from collections import deque
 
 nytimes_com = '''
 This New Liquid Is Magnetic, and Mesmerizing
@@ -66,20 +67,36 @@ else:
 full_path = os.path.join(os.getcwd(), carpeta)
 # print(full_path)
 
+historial_stack = deque()
+
 comando = ""
 comando = input()
+current = ""
+comando_anterior = "none"
 while comando != "exit":
-    if comando == "bloomberg" or comando == "nytimes":
-        print_file(os.path.join(full_path,comando))
+    if comando == "bloomberg":
+        print_file(os.path.join(full_path, comando))
+        historial_stack.append(bloomberg_com)
+    elif comando == "nytimes":
+        print_file(os.path.join(full_path, comando))
+        historial_stack.append(nytimes_com)
     elif "." in comando:
         if comando == 'bloomberg.com':
             print(bloomberg_com)
+            historial_stack.append(bloomberg_com)
             save_page(bloomberg_com, full_path, comando)
         elif comando == "nytimes.com":
             print(nytimes_com)
+            historial_stack.append(nytimes_com)
             save_page(nytimes_com, full_path, comando)
         else:
             print("Error: Please insert a correct URL")
+    elif comando == "back":
+        if len(historial_stack) != 0:
+            if comando_anterior != "back":
+                historial_stack.pop()  # current page not showed in back
+            print(historial_stack.pop())
     else:
         print("Error: Incorrect URL")
+    comando_anterior = comando
     comando = input()
