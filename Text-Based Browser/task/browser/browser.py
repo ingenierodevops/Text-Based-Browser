@@ -1,3 +1,5 @@
+import sys
+import os
 
 nytimes_com = '''
 This New Liquid Is Magnetic, and Mesmerizing
@@ -34,12 +36,50 @@ Twitter and Square Chief Executive Officer Jack Dorsey
  Tuesday, a signal of the strong ties between the Silicon Valley giants.
 '''
 
+
+def save_page(pagina, path, comando):
+    nombre = comando.split(".")[0]
+    with open(os.path.join(path,nombre), 'w') as fichero:
+        fichero.write(pagina)
+        fichero.close()
+
+def print_file(file_name):
+    with open(file_name, 'r') as fichero:
+        print(fichero.read())
+        fichero.close()
 # write your code here
+
+args = sys.argv
+carpeta = args[1]
+if not os.access(carpeta,os.F_OK):
+    os.mkdir(carpeta)
+    if not os.access(carpeta, os.F_OK):
+        print("error al crear la carpeta")
+else:
+    # print("la carpeta existe la limpiamos")
+    for file in os.listdir(carpeta):
+        if os.path.isfile(file):
+            os.remove(file)
+# os.chdir(carpeta)
+# print(os.getcwd())
+
+full_path = os.path.join(os.getcwd(), carpeta)
+# print(full_path)
+
 comando = ""
 comando = input()
 while comando != "exit":
-    if comando == 'bloomberg.com':
-        print(bloomberg_com)
-    elif comando == "nytimes.com":
-        print(nytimes_com)
+    if comando == "bloomberg" or comando == "nytimes":
+        print_file(os.path.join(full_path,comando))
+    elif "." in comando:
+        if comando == 'bloomberg.com':
+            print(bloomberg_com)
+            save_page(bloomberg_com, full_path, comando)
+        elif comando == "nytimes.com":
+            print(nytimes_com)
+            save_page(nytimes_com, full_path, comando)
+        else:
+            print("Error: Please insert a correct URL")
+    else:
+        print("Error: Incorrect URL")
     comando = input()
