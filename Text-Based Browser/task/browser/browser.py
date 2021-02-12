@@ -1,6 +1,7 @@
 import sys
 import os
 from collections import deque
+import requests
 
 nytimes_com = '''
 This New Liquid Is Magnetic, and Mesmerizing
@@ -48,6 +49,14 @@ def print_file(file_name):
     with open(file_name, 'r') as fichero:
         print(fichero.read())
         fichero.close()
+
+def pedir_pagina(pagina):
+    if "http" not in pagina:
+        pagina = "https://" + pagina
+    r = requests.get(pagina)
+    return r.text
+
+
 # write your code here
 
 args = sys.argv
@@ -82,11 +91,11 @@ while comando != "exit":
         historial_stack.append(nytimes_com)
     elif "." in comando:
         if comando == 'bloomberg.com':
-            print(bloomberg_com)
+            bloomberg_com = pedir_pagina(comando)
             historial_stack.append(bloomberg_com)
             save_page(bloomberg_com, full_path, comando)
         elif comando == "nytimes.com":
-            print(nytimes_com)
+            nytimes_com = pedir_pagina(comando)
             historial_stack.append(nytimes_com)
             save_page(nytimes_com, full_path, comando)
         else:
