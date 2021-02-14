@@ -2,45 +2,16 @@ import sys
 import os
 from collections import deque
 import requests
-
-nytimes_com = '''
-This New Liquid Is Magnetic, and Mesmerizing
-
-Scientists have created “soft” magnets that can flow 
-and change shape, and that could be a boon to medicine 
-and robotics. (Source: New York Times)
+from bs4 import BeautifulSoup
 
 
-Most Wikipedia Profiles Are of Men. This Scientist Is Changing That.
-
-Jessica Wade has added nearly 700 Wikipedia biographies for
- important female and minority scientists in less than two 
- years.
-
-'''
-
-bloomberg_com = '''
-The Space Race: From Apollo 11 to Elon Musk
-
-It's 50 years since the world was gripped by historic images
- of Apollo 11, and Neil Armstrong -- the first man to walk 
- on the moon. It was the height of the Cold War, and the charts
- were filled with David Bowie's Space Oddity, and Creedence's 
- Bad Moon Rising. The world is a very different place than 
- it was 5 decades ago. But how has the space race changed since
- the summer of '69? (Source: Bloomberg)
-
-
-Twitter CEO Jack Dorsey Gives Talk at Apple Headquarters
-
-Twitter and Square Chief Executive Officer Jack Dorsey 
- addressed Apple Inc. employees at the iPhone maker’s headquarters
- Tuesday, a signal of the strong ties between the Silicon Valley giants.
-'''
+nytimes_com = ""
+bloomberg_com = ""
 
 
 def save_page(pagina, path, comando):
-    nombre = comando.split(".")[0]
+    puntos = comando.count('.')
+    nombre = comando.split(".")[puntos - 1]
     with open(os.path.join(path,nombre), 'w') as fichero:
         fichero.write(pagina)
         fichero.close()
@@ -54,7 +25,19 @@ def pedir_pagina(pagina):
     if "http" not in pagina:
         pagina = "https://" + pagina
     r = requests.get(pagina)
-    return r.text
+    soup = BeautifulSoup(r.content, 'html.parser')
+    #pagina = soup.find_all()
+    cadena = ""
+    #for lines in pagina:
+    #    if lines.name == 'h1' or lines.name == 'h2' or lines.name == 'h3' or lines.name == 'h4' or lines.name == 'h5' or lines.name == 'h6' or lines.name == 'p' or lines.name == 'a' or lines.name == 'ul' or lines.name == 'ol' or lines.name == 'li':
+    #        cadena = cadena + lines.text
+
+    pagina = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "p", "a", "ul", "ol", "li"])
+    for lines in pagina:
+        cadena = cadena + lines.text
+    #cadena = soup.get_text()
+    print(cadena)
+    return cadena
 
 
 # write your code here
@@ -99,7 +82,10 @@ while comando != "exit":
             historial_stack.append(nytimes_com)
             save_page(nytimes_com, full_path, comando)
         else:
-            print("Error: Please insert a correct URL")
+            texto_pagina = pedir_pagina(comando)
+            historial_stack.append(texto_pagina)
+            save_page(texto_pagina, full_path, comando)
+            # print("Error: Please insert a correct URL")
     elif comando == "back":
         if len(historial_stack) != 0:
             if comando_anterior != "back":
