@@ -3,7 +3,8 @@ import os
 from collections import deque
 import requests
 from bs4 import BeautifulSoup
-
+from colorama import init
+from colorama import Fore, Style
 
 nytimes_com = ""
 bloomberg_com = ""
@@ -34,13 +35,17 @@ def pedir_pagina(pagina):
 
     pagina = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "p", "a", "ul", "ol", "li"])
     for lines in pagina:
-        cadena = cadena + lines.text
+        if lines.name == 'a':
+            cadena = cadena + Fore.BLUE + lines.text + Style.RESET_ALL
+        else:
+            cadena = cadena + lines.text
     #cadena = soup.get_text()
     print(cadena)
     return cadena
 
 
 # write your code here
+init()
 
 args = sys.argv
 carpeta = args[1]
